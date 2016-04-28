@@ -19678,18 +19678,63 @@ var AppDispatcher = require('../dispatcher/AppDispatcher');
 var AppConstants = require('../constants/AppConstants');
 
 var AppActions = {
-    
+    saveContact: function(contact){
+        AppDispatcher.handleViewAction({
+            actionType: AppConstants.SAVE_CONTACT,
+            contact: contact
+        })
+    }
 }
 
 module.exports = AppActions;
-},{"../constants/AppConstants":166,"../dispatcher/AppDispatcher":167}],165:[function(require,module,exports){
+},{"../constants/AppConstants":167,"../dispatcher/AppDispatcher":168}],165:[function(require,module,exports){
 var React = require('react');
 var AppActions = require('../actions/AppActions');
 var AppStore = require('../stores/AppStore');
 
+var AddForm = React.createClass({displayName: "AddForm",
+    render: function(){
+        return (
+            React.createElement("div", {className: "well"}, 
+                React.createElement("h3", null, "Add Contact"), 
+                React.createElement("form", {onSubmit: this.handleSubmit}, 
+                    React.createElement("div", {className: "form-group"}, 
+                        React.createElement("input", {type: "text", ref: "name", className: "form-control", placeholder: "Add Name..."})
+                    ), 
+                    React.createElement("div", {className: "form-group"}, 
+                        React.createElement("input", {type: "text", ref: "phone", className: "form-control", placeholder: "Add Phone..."})
+                    ), 
+                    React.createElement("div", {className: "form-group"}, 
+                        React.createElement("input", {type: "text", ref: "email", className: "form-control", placeholder: "Add Email..."})
+                    ), 
+                    React.createElement("button", {type: "submit", className: "btn btn-primary"}, "Submit")
+                )
+            )
+        )
+    },
+    handleSubmit: function(e){
+        e.preventDefault();
+        var contact = {
+            name: this.refs.name.value.trim(),
+            phone: this.refs.phone.value.trim(),
+            email: this.refs.email.value.trim()
+        }
+
+        AppActions.saveContact(contact);
+
+    }
+})
+
+module.exports = AddForm;
+},{"../actions/AppActions":164,"../stores/AppStore":170,"react":163}],166:[function(require,module,exports){
+var React = require('react');
+var AppActions = require('../actions/AppActions');
+var AppStore = require('../stores/AppStore');
+var AddForm = require('./AddForm.js');
+
 function getAppState(){
     return {
-
+        contacts: AppStore.getContacts()
     }
 }
 
@@ -19704,10 +19749,10 @@ var App = React.createClass({displayName: "App",
         AppStore.removeChangeListener(this._onChange);
     },
     render: function(){
-
+        console.log(this.state.contacts);
         return(
             React.createElement("div", null, 
-                "Hello World"
+                React.createElement(AddForm, null)
             )
         )
     },
@@ -19719,11 +19764,11 @@ var App = React.createClass({displayName: "App",
 })
 
 module.exports = App;
-},{"../actions/AppActions":164,"../stores/AppStore":169,"react":163}],166:[function(require,module,exports){
+},{"../actions/AppActions":164,"../stores/AppStore":170,"./AddForm.js":165,"react":163}],167:[function(require,module,exports){
 module.exports = {
-    
+    SAVE_CONTACT: 'SAVE_CONTACT'
 }
-},{}],167:[function(require,module,exports){
+},{}],168:[function(require,module,exports){
 var Dispatcher = require('flux').Dispatcher;
 
 var assign = require('object-assign');
@@ -19739,7 +19784,7 @@ var AppDispatcher = assign(new Dispatcher(),{
 });
 
 module.exports = AppDispatcher;
-},{"flux":29,"object-assign":32}],168:[function(require,module,exports){
+},{"flux":29,"object-assign":32}],169:[function(require,module,exports){
 var App = require('./components/App');
 var React = require('react');
 var ReactDOM = require('react-dom');
@@ -19749,7 +19794,7 @@ ReactDOM.render(
     React.createElement(App, null),
     document.getElementById('app')
 );
-},{"./components/App":165,"./utils/appAPI.js":171,"react":163,"react-dom":34}],169:[function(require,module,exports){
+},{"./components/App":166,"./utils/appAPI.js":172,"react":163,"react-dom":34}],170:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var AppConstants = require('../constants/AppConstants');
 
@@ -19759,10 +19804,16 @@ var AppAPI = require('../utils/AppAPI');
 
 var CHANGE_EVENT = 'change';
 
-var _items = [];
+var _contacts = [];
 
 
 var AppStore = assign({}, EventEmitter.prototype, {
+    saveContact: function(contact){
+        _contacts.push(contact);
+    },
+    getContacts: function(){
+        return _contacts;
+    },
     emitChange: function(){
         this.emit(CHANGE_EVENT);
     },
@@ -19778,6 +19829,15 @@ AppDispatcher.register(function(payload){
     var action = payload.action;
 
     switch(action.actionType){
+        case AppConstants.SAVE_CONTACT:
+            console.log('saving contact...');
+
+            //Store saveContact
+            AppStore.saveContact(action.contact);
+
+            //Emit change
+            AppStore.emit(CHANGE_EVENT);
+            break;
 
     }
 
@@ -19786,16 +19846,16 @@ AppDispatcher.register(function(payload){
 
 
 module.exports = AppStore;
-},{"../constants/AppConstants":166,"../dispatcher/AppDispatcher":167,"../utils/AppAPI":170,"events":1,"object-assign":32}],170:[function(require,module,exports){
+},{"../constants/AppConstants":167,"../dispatcher/AppDispatcher":168,"../utils/AppAPI":171,"events":1,"object-assign":32}],171:[function(require,module,exports){
 var AppActions = require('../actions/AppActions');
 
 module.exports = {
 
 }
-},{"../actions/AppActions":164}],171:[function(require,module,exports){
+},{"../actions/AppActions":164}],172:[function(require,module,exports){
 var AppActions = require('../actions/AppActions');
 
 module.exports = {
 
 }
-},{"../actions/AppActions":164}]},{},[168]);
+},{"../actions/AppActions":164}]},{},[169]);
