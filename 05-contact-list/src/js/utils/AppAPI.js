@@ -23,5 +23,12 @@ module.exports = {
                 AppActions.receiveContacts(contacts);
             });
         });
+    },
+
+    removeContact: function(contactId){
+        this.firebaseRef= new Firebase('https://contactl-list.firebaseio.com/contacts/'+contactId);
+        this.firebaseRef.remove();
     }
+
+
 }
