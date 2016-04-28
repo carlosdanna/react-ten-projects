@@ -19678,31 +19678,71 @@ var AppDispatcher = require('../dispatcher/AppDispatcher');
 var AppConstants = require('../constants/AppConstants');
 
 var AppActions = {
+    searchMovies: function(movie){
+        // console.log('Searching for movie ' + movie.title + ' test');
+        AppDispatcher.handleViewAction({
 
+            actionType: AppConstants.SEARCH_MOVIES,
+            movie: movie
+        });
+    }
 }
 
 module.exports = AppActions;
-},{"../constants/AppConstants":166,"../dispatcher/AppDispatcher":167}],165:[function(require,module,exports){
+},{"../constants/AppConstants":167,"../dispatcher/AppDispatcher":168}],165:[function(require,module,exports){
 var React = require('react');
 var AppActions = require('../actions/AppActions');
 var AppStore = require('../stores/AppStore');
+var SearchForm = require('./SearchForm');
 
 var App = React.createClass({displayName: "App",
     render: function(){
         return(
             React.createElement("div", null, 
-                "MY APP"
+                React.createElement(SearchForm, null)
             )
         )
     }
 })
 
 module.exports = App;
-},{"../actions/AppActions":164,"../stores/AppStore":169,"react":163}],166:[function(require,module,exports){
+},{"../actions/AppActions":164,"../stores/AppStore":170,"./SearchForm":166,"react":163}],166:[function(require,module,exports){
+var React = require('react');
+var AppActions = require('../actions/AppActions');
+var AppStore = require('../stores/AppStore');
+
+var SearchForm = React.createClass({displayName: "SearchForm",
+
+    render: function(){
+        return (
+            React.createElement("div", {className: "search-form"}, 
+                React.createElement("h1", {className: "text-center"}, "Search For a Movie "), 
+                React.createElement("form", {onSubmit: this.onSubmit}, 
+                    React.createElement("div", {className: "form-group"}, 
+                        React.createElement("input", {type: "text", className: "form-control", ref: "title", placeholder: "Enter a Movie Title..."})
+                    ), 
+                    React.createElement("button", {className: "btn btn-primary btn-block"}, "Search Movies")
+                )
+            )
+        )
+    },
+    onSubmit: function(e){
+        e.preventDefault();
+
+        var movie = {
+            title: this.refs.title.value.trim()
+        }
+
+        AppActions.searchMovies(movie);
+    }
+});
+
+module.exports = SearchForm;
+},{"../actions/AppActions":164,"../stores/AppStore":170,"react":163}],167:[function(require,module,exports){
 module.exports = {
     SEARCH_MOVIES: 'SEARCH_MOVIES'
 }
-},{}],167:[function(require,module,exports){
+},{}],168:[function(require,module,exports){
 var Dispatcher = require('flux').Dispatcher;
 
 var assign = require('object-assign');
@@ -19718,7 +19758,7 @@ var AppDispatcher = assign(new Dispatcher(),{
 });
 
 module.exports = AppDispatcher;
-},{"flux":29,"object-assign":32}],168:[function(require,module,exports){
+},{"flux":29,"object-assign":32}],169:[function(require,module,exports){
 var App = require('./components/App');
 var React = require('react');
 var ReactDOM = require('react-dom');
@@ -19728,7 +19768,7 @@ ReactDOM.render(
     React.createElement(App, null),
     document.getElementById('app')
 );
-},{"./components/App":165,"./utils/appAPI.js":171,"react":163,"react-dom":34}],169:[function(require,module,exports){
+},{"./components/App":165,"./utils/appAPI.js":172,"react":163,"react-dom":34}],170:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var AppConstants = require('../constants/AppConstants');
 
@@ -19765,7 +19805,7 @@ AppDispatcher.register(function(payload){
 
 
 module.exports = AppStore;
-},{"../constants/AppConstants":166,"../dispatcher/AppDispatcher":167,"../utils/AppAPI":170,"events":1,"object-assign":32}],170:[function(require,module,exports){
+},{"../constants/AppConstants":167,"../dispatcher/AppDispatcher":168,"../utils/AppAPI":171,"events":1,"object-assign":32}],171:[function(require,module,exports){
 var AppActions = require('../actions/AppActions');
 
 module.exports = {
@@ -19773,7 +19813,7 @@ module.exports = {
         
     }
 }
-},{"../actions/AppActions":164}],171:[function(require,module,exports){
+},{"../actions/AppActions":164}],172:[function(require,module,exports){
 var AppActions = require('../actions/AppActions');
 
 module.exports = {
@@ -19781,4 +19821,4 @@ module.exports = {
         
     }
 }
-},{"../actions/AppActions":164}]},{},[168]);
+},{"../actions/AppActions":164}]},{},[169]);
