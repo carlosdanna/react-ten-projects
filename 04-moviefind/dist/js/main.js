@@ -19681,9 +19681,15 @@ var AppActions = {
     searchMovies: function(movie){
         // console.log('Searching for movie ' + movie.title + ' test');
         AppDispatcher.handleViewAction({
-
             actionType: AppConstants.SEARCH_MOVIES,
             movie: movie
+        });
+    },
+    receiveMovieResults: function(movies){
+        // console.log('movies received ', movies);
+        AppDispatcher.handleViewAction({
+            actionType: AppConstants.RECEIVE_MOVIE_RESULTS,
+            movies: movies
         });
     }
 }
@@ -19695,14 +19701,35 @@ var AppActions = require('../actions/AppActions');
 var AppStore = require('../stores/AppStore');
 var SearchForm = require('./SearchForm');
 
+function getAppState(){
+    return {
+        movies: AppStore.getMovieResults()
+    }
+}
+
 var App = React.createClass({displayName: "App",
+    getInitialState: function(){
+        return getAppState();
+    },
+    componentDidMount: function(){
+        AppStore.addChangeListener(this._onChange);
+    },
+    componentWillUnmount: function(){
+        AppStore.removeChangeListener(this._onChange);
+    },
     render: function(){
+        console.log(this.state.movies);
         return(
             React.createElement("div", null, 
                 React.createElement(SearchForm, null)
             )
         )
+    },
+
+    _onChange: function(){
+        this.setState(getAppState());
     }
+
 })
 
 module.exports = App;
@@ -19740,7 +19767,8 @@ var SearchForm = React.createClass({displayName: "SearchForm",
 module.exports = SearchForm;
 },{"../actions/AppActions":164,"../stores/AppStore":170,"react":163}],167:[function(require,module,exports){
 module.exports = {
-    SEARCH_MOVIES: 'SEARCH_MOVIES'
+    SEARCH_MOVIES: 'SEARCH_MOVIES',
+    RECEIVE_MOVIE_RESULTS: 'RECEIVE_MOVIE_RESULTS'
 }
 },{}],168:[function(require,module,exports){
 var Dispatcher = require('flux').Dispatcher;
@@ -19778,10 +19806,16 @@ var AppAPI = require('../utils/AppAPI');
 
 var CHANGE_EVENT = 'change';
 
-var movies = [];
+var _movies = [];
 var _selected = '';
 
 var AppStore = assign({}, EventEmitter.prototype, {
+    setMovieResults: function(movies){
+        _movies = movies;
+    },
+    getMovieResults: function(){
+        return _movies;
+    },
     emitChange: function(){
         this.emit(CHANGE_EVENT);
     },
@@ -19797,7 +19831,16 @@ AppDispatcher.register(function(payload){
     var action = payload.action;
 
     switch(action.actionType){
+        case AppConstants.SEARCH_MOVIES:
+            // console.log('Searching for movie ' + action.movie.title);
+            AppAPI.searchMovies(action.movie);
+            AppStore.emit(CHANGE_EVENT);
+            break;
 
+        case AppConstants.RECEIVE_MOVIE_RESULTS:
+            AppStore.setMovieResults(action.movies);
+            AppStore.emit(CHANGE_EVENT);
+            break;
     }
 
     return true;
@@ -19810,7 +19853,17 @@ var AppActions = require('../actions/AppActions');
 
 module.exports = {
     searchMovies: function(movie){
-        
+        $.ajax({
+            url: "http://www.omdbapi.com/?s=" + movie.title,
+            dataType: 'json',
+            cache: false,
+            success: function(data){
+                AppActions.receiveMovieResults(data.Search);
+            }.bind(this),
+            error: function(xhr, status, err){
+                alert(err);
+            }.bind(this)
+        })
     }
 }
 },{"../actions/AppActions":164}],172:[function(require,module,exports){
@@ -19818,7 +19871,17 @@ var AppActions = require('../actions/AppActions');
 
 module.exports = {
     searchMovies: function(movie){
-        
+        $.ajax({
+            url: "http://www.omdbapi.com/?s=" + movie.title,
+            dataType: 'json',
+            cache: false,
+            success: function(data){
+                AppActions.receiveMovieResults(data.Search);
+            }.bind(this),
+            error: function(xhr, status, err){
+                alert(err);
+            }.bind(this)
+        })
     }
 }
 },{"../actions/AppActions":164}]},{},[169]);
