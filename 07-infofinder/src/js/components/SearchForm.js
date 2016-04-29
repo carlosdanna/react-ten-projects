@@ -10,10 +10,23 @@ var SearchForm = React.createClass({
 
         return(
             <div>
-                SearchForm
+                <form onSubmit={this.searchText} className="well">
+                    <div className="form-group" >
+                        <label>Search For Something...</label>
+                        <input type="text" className="form-control" ref="text" />
+                    </div>
+                </form>
             </div>
         )
     },
+    searchText: function(e){
+        e.preventDefault();
+        var search = {
+            text: this.refs.text.value.trim()
+        }
+        AppActions.searchText(search);
+    }
+
 
 })
 
