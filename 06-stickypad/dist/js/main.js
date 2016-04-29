@@ -19794,8 +19794,8 @@ var Note = React.createClass({displayName: "Note",
     render: function(){
 
         return(
-            React.createElement("div", null, 
-                "A NOTE"
+            React.createElement("div", {className: "column"}, 
+                React.createElement("div", {className: "note"}, React.createElement("p", null, this.props.note.text))
             )
         )
     }
