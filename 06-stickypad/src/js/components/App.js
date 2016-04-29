@@ -1,10 +1,11 @@
 var React = require('react');
 var AppActions = require('../actions/AppActions');
 var AppStore = require('../stores/AppStore');
+var AddNoteForm = require('./AddNoteForm');
 
 function getAppState(){
     return {
-
+        notes: AppStore.getNotes()
     }
 }
 
@@ -19,7 +20,7 @@ var App = React.createClass({
         AppStore.removeChangeListener(this._onChange);
     },
     render: function(){
-
+        console.log(this.state.notes);
         return(
             <div>
                 <div className="off-canvas-wrapper">
@@ -27,7 +28,7 @@ var App = React.createClass({
                         <div className="off-canvas position-left reveal-for-large" data-off-canvas data-position="left">
                             <div className="row column">
                                 <br />
-                                //ADD NOTES FORM HERE
+                                <AddNoteForm />
                             </div>
                         </div>
                         <div className="off-canvas-content" data-off-canvas-content>
