@@ -19683,6 +19683,12 @@ var AppActions = {
             actionType: AppConstants.SEARCH_TEXT,
             search: search
         })
+    },
+    receiveResults: function(results){
+        AppDispatcher.handleViewAction({
+            actionType: AppConstants.RECEIVE_RESULTS,
+            results: results
+        })
     }
 }
 
@@ -19784,7 +19790,8 @@ var SearchResults = React.createClass({displayName: "SearchResults",
 module.exports = SearchResults;
 },{"../actions/AppActions":164,"../stores/AppStore":171,"react":163}],168:[function(require,module,exports){
 module.exports = {
-    SEARCH_TEXT: 'SEARCH_TEXT'
+    SEARCH_TEXT: 'SEARCH_TEXT',
+    RECEIVE_RESULTS: 'RECEIVE_RESULTS'
 }
 },{}],169:[function(require,module,exports){
 var Dispatcher = require('flux').Dispatcher;
@@ -19822,10 +19829,17 @@ var AppAPI = require('../utils/AppAPI');
 
 var CHANGE_EVENT = 'change';
 
-var _items = [];
-
+var _results = [];
+var _searchText = ''
 
 var AppStore = assign({}, EventEmitter.prototype, {
+    setSearchText: function(search){
+        _searchText = search.text;
+    },
+    setResults: function(results){
+        console.log(results);
+        _results = results
+    },
     emitChange: function(){
         this.emit(CHANGE_EVENT);
     },
@@ -19846,6 +19860,11 @@ AppDispatcher.register(function(payload){
             AppStore.setSearchText(action.search);
             AppStore.emit(CHANGE_EVENT);
             break;
+
+        case AppConstants.RECEIVE_RESULTS:
+            AppStore.setResults(action.results);
+            AppStore.emit(CHANGE_EVENT);
+            break;
     }
 
     return true;
@@ -19857,12 +19876,42 @@ module.exports = AppStore;
 var AppActions = require('../actions/AppActions');
 
 module.exports = {
+    searchText: function(search){
+        console.log("API Searching for... "+ search.text);
+        var url = 'http://api.duckduckgo.com/?q='+search.text+'&format=json&pretty=1';
+        $.ajax({
+            url: url,
+            dataType: 'jsonp',
+            cache: false,
+            success: function(data){
+                AppActions.receiveResults(data.RelatedTopics);
+            }.bind(this),
+            error: function(xhr, status, err){
+                console.log(err);
+            }
+        })
+    }
 
 }
 },{"../actions/AppActions":164}],173:[function(require,module,exports){
 var AppActions = require('../actions/AppActions');
 
 module.exports = {
+    searchText: function(search){
+        console.log("API Searching for... "+ search.text);
+        var url = 'http://api.duckduckgo.com/?q='+search.text+'&format=json&pretty=1';
+        $.ajax({
+            url: url,
+            dataType: 'jsonp',
+            cache: false,
+            success: function(data){
+                AppActions.receiveResults(data.RelatedTopics);
+            }.bind(this),
+            error: function(xhr, status, err){
+                console.log(err);
+            }
+        })
+    }
 
 }
 },{"../actions/AppActions":164}]},{},[170]);
