@@ -21,5 +21,11 @@ module.exports = {
                 AppActions.receiveVideos(videos);
             });
         });
+    },
+
+    removeVideo: function(videoId){
+        console.log(videoId);
+        this.firebaseRef = new Firebase("https://yttestgallery.firebaseio.com/videos/"+videoId);
+        this.firebaseRef.remove();
     }
 }

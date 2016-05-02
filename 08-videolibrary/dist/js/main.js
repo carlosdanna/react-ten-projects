@@ -19971,7 +19971,14 @@ var AppActions = {
             actionType: AppConstants.RECEIVE_VIDEOS,
             videos: videos
         });
+    },
+    removeVideo: function(videoId){
+        AppDispatcher.handleViewAction({
+            actionType: AppConstants.REMOVE_VIDEO,
+            videoId: videoId
+        });
     }
+
 }
 
 module.exports = AppActions;
@@ -20105,11 +20112,15 @@ var Video = React.createClass({displayName: "Video",
         var link = `https://www.youtube.com/embed/${this.props.video.video_id}`;
         return(
             React.createElement("div", {className: "c4"}, 
-                React.createElement("h5", null, this.props.video.title), 
+                React.createElement("h5", null, this.props.video.title, React.createElement("span", {className: "delete"}, React.createElement("a", {onClick: this.onDelete.bind(this, this.props.video.id), href: "#"}, "x"))), 
                 React.createElement("iframe", {width: "360", height: "285", src: link, frameBorder: "0", allowFullScreen: true}), 
                 React.createElement("p", null, this.props.video.description)
             )
         )
+    },
+
+    onDelete: function(i,j){
+        AppActions.removeVideo(i);
     }
 
 })
@@ -20118,7 +20129,8 @@ module.exports = Video;
 },{"../actions/AppActions":165,"../stores/AppStore":173,"react":164}],170:[function(require,module,exports){
 module.exports = {
         SAVE_VIDEO:'SAVE_VIDEO',
-        RECEIVE_VIDEOS: 'RECEIVE_VIDEOS'
+        RECEIVE_VIDEOS: 'RECEIVE_VIDEOS',
+        REMOVE_VIDEO: 'REMOVE_VIDEO'
 }
 },{}],171:[function(require,module,exports){
 var Dispatcher = require('flux').Dispatcher;
@@ -20171,6 +20183,10 @@ var AppStore = assign({}, EventEmitter.prototype, {
     setVideos: function(videos){
         _videos = videos;
     },
+    removeVideo: function(videoId){
+        var index = _videos.findIndex(x => x.id === videoId);
+        _videos.splice(index, 1);
+    },
     emitChange: function(){
         this.emit(CHANGE_EVENT);
     },
@@ -20207,6 +20223,16 @@ AppDispatcher.register(function(payload){
             AppStore.emit(CHANGE_EVENT);
             break;
 
+        case AppConstants.REMOVE_VIDEO:
+            //Store remove video
+            AppStore.removeVideo(action.videoId);
+
+            //Api remove video
+            AppAPI.removeVideo(action.videoId);
+
+            //emit change
+            AppStore.emit(CHANGE_EVENT);
+            break;
     }
 
     return true;
@@ -20238,6 +20264,12 @@ module.exports = {
                 AppActions.receiveVideos(videos);
             });
         });
+    },
+
+    removeVideo: function(videoId){
+        console.log(videoId);
+        this.firebaseRef = new Firebase("https://yttestgallery.firebaseio.com/videos/"+videoId);
+        this.firebaseRef.remove();
     }
 }
 },{"../actions/AppActions":165,"firebase":29}],175:[function(require,module,exports){
@@ -20264,6 +20296,12 @@ module.exports = {
                 AppActions.receiveVideos(videos);
             });
         });
+    },
+
+    removeVideo: function(videoId){
+        console.log(videoId);
+        this.firebaseRef = new Firebase("https://yttestgallery.firebaseio.com/videos/"+videoId);
+        this.firebaseRef.remove();
     }
 }
 },{"../actions/AppActions":165,"firebase":29}]},{},[172]);
