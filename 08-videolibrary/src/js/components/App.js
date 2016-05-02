@@ -5,7 +5,7 @@ var AddForm = require('./AddForm');
 
 function getAppState(){
     return {
-
+        videos: AppStore.getVideos()
     }
 }
 
@@ -20,7 +20,7 @@ var App = React.createClass({
         AppStore.removeChangeListener(this._onChange);
     },
     render: function(){
-
+        console.log(this.state.videos);
         return(
             <div>
                 <AddForm></AddForm>
