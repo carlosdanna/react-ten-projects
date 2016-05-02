@@ -17,8 +17,8 @@ var AppStore = assign({}, EventEmitter.prototype, {
     getVideos: function(){
         return _videos;
     },
-    setVideos: function(video){
-        _videos = video;
+    setVideos: function(videos){
+        _videos = videos;
     },
     emitChange: function(){
         this.emit(CHANGE_EVENT);
@@ -47,6 +47,15 @@ AppDispatcher.register(function(payload){
             //emit change
             AppStore.emit(CHANGE_EVENT);
             break;
+        case AppConstants.RECEIVE_VIDEOS:
+            console.log('Receiving videos...');
+            //Store set videos
+            AppStore.setVideos(action.videos);
+
+            //emit change
+            AppStore.emit(CHANGE_EVENT);
+            break;
+
     }
 
     return true;
