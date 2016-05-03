@@ -19722,23 +19722,43 @@ var AppDispatcher = require('../dispatcher/AppDispatcher');
 var AppConstants = require('../constants/AppConstants');
 
 var AppActions = {
-   actionExample: function(data){
-        AppDispatcher.handleViewAction({
-            actionType: AppConstants.ACTION_EXAMPLE,
-            data: data
-        });
-    } 
+   showForm: function(){
+       AppDispatcher.handleViewAction({
+           actionType: AppConstants.SHOW_FORM
+       })
+   }
 }
 
 module.exports = AppActions;
-},{"../constants/AppConstants":166,"../dispatcher/AppDispatcher":167}],165:[function(require,module,exports){
+},{"../constants/AppConstants":167,"../dispatcher/AppDispatcher":168}],165:[function(require,module,exports){
 var React = require('react');
 var AppActions = require('../actions/AppActions');
 var AppStore = require('../stores/AppStore');
 
+var AddForm = React.createClass({displayName: "AddForm",
+
+    render: function(){
+
+        return(
+            React.createElement("div", null, 
+                "Add Form"
+            )
+        )
+    },
+
+
+})
+
+module.exports = AddForm;
+},{"../actions/AppActions":164,"../stores/AppStore":170,"react":163}],166:[function(require,module,exports){
+var React = require('react');
+var AppActions = require('../actions/AppActions');
+var AppStore = require('../stores/AppStore');
+var AddForm = require('./AddForm');
+
 function getAppState(){
     return {
-
+        showForm: AppStore.getShowForm()
     }
 }
 
@@ -19752,11 +19772,26 @@ var App = React.createClass({displayName: "App",
     componentWillUnmount: function(){
         AppStore.removeChangeListener(this._onChange);
     },
-    render: function(){
+    onShowFormClick: function(e){
+        e.preventDefault();
+        AppActions.showForm();
+    },
 
+    render: function(){
+        if(this.state.showForm){
+            var form = React.createElement(AddForm, null)
+        }else{
+            var form = '';
+        }
         return(
             React.createElement("div", null, 
-                "Hello World"
+                React.createElement("h1", {className: "text-center page-header"}, "Workout Logger"), 
+                React.createElement("a", {onClick: this.onShowFormClick, href: "#", className: "btn btn-primary btn-block"}, "Add Workout"), 
+                React.createElement("br", null), 
+                form, 
+                React.createElement("br", null), 
+                "Workouts", 
+                React.createElement("br", null)
             )
         )
     },
@@ -19768,11 +19803,11 @@ var App = React.createClass({displayName: "App",
 })
 
 module.exports = App;
-},{"../actions/AppActions":164,"../stores/AppStore":169,"react":163}],166:[function(require,module,exports){
+},{"../actions/AppActions":164,"../stores/AppStore":170,"./AddForm":165,"react":163}],167:[function(require,module,exports){
 module.exports = {
-    ACTION_EXAMPLE: 'ACTION_EXAMPLE'
+    SHOW_FORM: 'SHOW_FORM'
 }
-},{}],167:[function(require,module,exports){
+},{}],168:[function(require,module,exports){
 var Dispatcher = require('flux').Dispatcher;
 
 var assign = require('object-assign');
@@ -19788,7 +19823,7 @@ var AppDispatcher = assign(new Dispatcher(),{
 });
 
 module.exports = AppDispatcher;
-},{"flux":29,"object-assign":32}],168:[function(require,module,exports){
+},{"flux":29,"object-assign":32}],169:[function(require,module,exports){
 var App = require('./components/App');
 var React = require('react');
 var ReactDOM = require('react-dom');
@@ -19798,7 +19833,7 @@ ReactDOM.render(
     React.createElement(App, null),
     document.getElementById('app')
 );
-},{"./components/App":165,"./utils/appAPI.js":171,"react":163,"react-dom":34}],169:[function(require,module,exports){
+},{"./components/App":166,"./utils/appAPI.js":172,"react":163,"react-dom":34}],170:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var AppConstants = require('../constants/AppConstants');
 
@@ -19809,11 +19844,17 @@ var AppAPI = require('../utils/AppAPI');
 var CHANGE_EVENT = 'change';
 
 var _items = [];
-
+var _showForm = false;
 
 var AppStore = assign({}, EventEmitter.prototype, {
     emitChange: function(){
         this.emit(CHANGE_EVENT);
+    },
+    showForm: function(){
+        _showForm = true;
+    },
+    getShowForm: function(){
+        return _showForm;
     },
     addChangeListener: function(callback){
         this.on('change', callback);
@@ -19827,13 +19868,13 @@ AppDispatcher.register(function(payload){
     var action = payload.action;
 
     switch(action.actionType){
-		case AppConstants.ACTION_EXAMPLE:
-			console.log('Executing action example...');
-			
+		case AppConstants.SHOW_FORM:
+			console.log('Executing show form...');
+
 			//App store modification
-			
-			//Api Call if needed
-			
+            AppStore.showForm();
+
+
 			//Emit changes
 			AppStore.emitChange();
 			break;
@@ -19844,16 +19885,16 @@ AppDispatcher.register(function(payload){
 
 
 module.exports = AppStore;
-},{"../constants/AppConstants":166,"../dispatcher/AppDispatcher":167,"../utils/AppAPI":170,"events":1,"object-assign":32}],170:[function(require,module,exports){
+},{"../constants/AppConstants":167,"../dispatcher/AppDispatcher":168,"../utils/AppAPI":171,"events":1,"object-assign":32}],171:[function(require,module,exports){
 var AppActions = require('../actions/AppActions');
 
 module.exports = {
 
 }
-},{"../actions/AppActions":164}],171:[function(require,module,exports){
+},{"../actions/AppActions":164}],172:[function(require,module,exports){
 var AppActions = require('../actions/AppActions');
 
 module.exports = {
 
 }
-},{"../actions/AppActions":164}]},{},[168]);
+},{"../actions/AppActions":164}]},{},[169]);

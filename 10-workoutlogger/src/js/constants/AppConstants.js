@@ -1,3 +1,3 @@
 module.exports = {
-    ACTION_EXAMPLE: 'ACTION_EXAMPLE'
+    SHOW_FORM: 'SHOW_FORM'
 }

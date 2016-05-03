@@ -2,12 +2,11 @@ var AppDispatcher = require('../dispatcher/AppDispatcher');
 var AppConstants = require('../constants/AppConstants');
 
 var AppActions = {
-   actionExample: function(data){
-        AppDispatcher.handleViewAction({
-            actionType: AppConstants.ACTION_EXAMPLE,
-            data: data
-        });
-    } 
+   showForm: function(){
+       AppDispatcher.handleViewAction({
+           actionType: AppConstants.SHOW_FORM
+       })
+   }
 }
 
 module.exports = AppActions;

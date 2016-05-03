@@ -8,11 +8,17 @@ var AppAPI = require('../utils/AppAPI');
 var CHANGE_EVENT = 'change';
 
 var _items = [];
-
+var _showForm = false;
 
 var AppStore = assign({}, EventEmitter.prototype, {
     emitChange: function(){
         this.emit(CHANGE_EVENT);
+    },
+    showForm: function(){
+        _showForm = true;
+    },
+    getShowForm: function(){
+        return _showForm;
     },
     addChangeListener: function(callback){
         this.on('change', callback);
@@ -26,13 +32,13 @@ AppDispatcher.register(function(payload){
     var action = payload.action;
 
     switch(action.actionType){
-		case AppConstants.ACTION_EXAMPLE:
-			console.log('Executing action example...');
-			
+		case AppConstants.SHOW_FORM:
+			console.log('Executing show form...');
+
 			//App store modification
-			
-			//Api Call if needed
-			
+            AppStore.showForm();
+
+
 			//Emit changes
 			AppStore.emitChange();
 			break;
