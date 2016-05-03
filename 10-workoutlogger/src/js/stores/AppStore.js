@@ -23,6 +23,9 @@ var AppStore = assign({}, EventEmitter.prototype, {
     getWorkouts: function(){
         return _workouts;
     },
+    receiveWorkouts: function(workouts){
+        _workouts = workouts
+    },
     addWorkout: function(workout){
         _workouts.push(workout);
     },
@@ -60,7 +63,20 @@ AppDispatcher.register(function(payload){
 
             //Emit changes
             AppStore.emitChange();
-        break;
+            break;
+        case AppConstants.RECEIVE_WORKOUTS:
+        console.log('Add workout form...');
+
+            //App store modification
+            AppStore.receiveWorkouts(action.workouts);
+
+            //App API add workout
+            // AppAPI.addWorkout(action.workout);
+
+            //Emit changes
+            AppStore.emitChange();
+            break;
+
     }
 
     return true;
