@@ -56,7 +56,7 @@ AppDispatcher.register(function(payload){
             AppStore.addWorkout(action.workout);
 
             //App API add workout
-            //AppAPI.addWorkout(action.workout);
+            AppAPI.addWorkout(action.workout);
 
             //Emit changes
             AppStore.emitChange();
