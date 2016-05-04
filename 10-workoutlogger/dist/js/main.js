@@ -19738,6 +19738,12 @@ var AppActions = {
            actionType: AppConstants.RECEIVE_WORKOUTS,
            workouts: workouts
        });
+   },
+   removeWorkout: function(workoutId){
+       AppDispatcher.handleViewAction({
+           actionType: AppConstants.REMOVE_WORKOUT,
+           workoutId: workoutId
+       });
    }
 }
 
@@ -19870,9 +19876,13 @@ var Workout = React.createClass({displayName: "Workout",
         }
         return(
             React.createElement("li", {className: "list-group-item"}, 
-                this.props.workout.type, " - ", this.props.workout.minutes, " Minutes ", miles
+                this.props.workout.type, " - ", this.props.workout.minutes, " Minutes ", miles, " ", React.createElement("a", {href: "#", onClick: this.onClick.bind(this, this.props.workout.id), className: "delete"}, "X")
             )
         )
+    },
+
+    onClick: function(i,j){
+        AppActions.removeWorkout(i);
     }
 });
 
@@ -19905,7 +19915,8 @@ module.exports = Workouts;
 module.exports = {
     SHOW_FORM: 'SHOW_FORM',
     ADD_WORKOUT: 'ADD_WORKOUT',
-    RECEIVE_WORKOUTS: 'RECEIVE_WORKOUTS'
+    RECEIVE_WORKOUTS: 'RECEIVE_WORKOUTS',
+    REMOVE_WORKOUT: 'REMOVE_WORKOUT'
 }
 },{}],170:[function(require,module,exports){
 var Dispatcher = require('flux').Dispatcher;
@@ -19994,6 +20005,10 @@ var AppStore = assign({}, EventEmitter.prototype, {
     addWorkout: function(workout){
         _workouts.push(workout);
     },
+    removeWorkout: function(workoutId){
+        var index = _workouts.findIndex(x => x.id === workoutId);
+        _workouts.splice(index, 1);
+    },
     addChangeListener: function(callback){
         this.on('change', callback);
     },
@@ -20035,8 +20050,18 @@ AppDispatcher.register(function(payload){
             //App store modification
             AppStore.receiveWorkouts(action.workouts);
 
+            //Emit changes
+            AppStore.emitChange();
+            break;
+
+        case AppConstants.REMOVE_WORKOUT:
+            console.log('Removing workout from the list...');
+
+            //App store modification
+            AppStore.removeWorkout(action.workoutId);
+
             //App API add workout
-            // AppAPI.addWorkout(action.workout);
+            AppAPI.removeWorkout(action.workoutId);
 
             //Emit changes
             AppStore.emitChange();
@@ -20062,6 +20087,17 @@ module.exports = {
         var workouts = JSON.parse(localStorage.getItem('workouts'));
         workouts.push(workout);
         localStorage.setItem('workouts', JSON.stringify(workouts));
+    },
+    removeWorkout: function(workoutId){
+        var workouts = JSON.parse(localStorage.getItem('workouts'));
+        for(var i = 0; i< workouts.length; i++)
+        {
+            if (workouts[i].id == workoutId)
+            {
+                workouts.splice(i,1);
+            }
+        }
+        localStorage.setItem('workouts', JSON.stringify(workouts));
     }
 }
 },{"../actions/AppActions":164}],175:[function(require,module,exports){
@@ -20076,6 +20112,17 @@ module.exports = {
         console.log('Saving workout...');
         var workouts = JSON.parse(localStorage.getItem('workouts'));
         workouts.push(workout);
+        localStorage.setItem('workouts', JSON.stringify(workouts));
+    },
+    removeWorkout: function(workoutId){
+        var workouts = JSON.parse(localStorage.getItem('workouts'));
+        for(var i = 0; i< workouts.length; i++)
+        {
+            if (workouts[i].id == workoutId)
+            {
+                workouts.splice(i,1);
+            }
+        }
         localStorage.setItem('workouts', JSON.stringify(workouts));
     }
 }

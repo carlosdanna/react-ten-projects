@@ -10,5 +10,16 @@ module.exports = {
         var workouts = JSON.parse(localStorage.getItem('workouts'));
         workouts.push(workout);
         localStorage.setItem('workouts', JSON.stringify(workouts));
+    },
+    removeWorkout: function(workoutId){
+        var workouts = JSON.parse(localStorage.getItem('workouts'));
+        for(var i = 0; i< workouts.length; i++)
+        {
+            if (workouts[i].id == workoutId)
+            {
+                workouts.splice(i,1);
+            }
+        }
+        localStorage.setItem('workouts', JSON.stringify(workouts));
     }
 }
